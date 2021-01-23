@@ -1,5 +1,5 @@
 ''' Author: Jennifer Zhu
-    Date: May 28, 2019
+    Updated: Jan 22, 2021
     Desc: A remake of Atari Centipede.
     
     Points awarded:
@@ -149,14 +149,14 @@ def playGame(mushrooms, leadScore):
     pygame.display.set_caption("Atari Centipede")
     
     # Entities
-    background = pygame.image.load("images/crystal_cave.jpg")
+    background = pygame.image.load("images/crystal-cave.jpg")
     background = background.convert()
     screen.blit(background, (0, 0))
     
     gameOverFont = pygame.font.Font("Eater.ttf", 50)
     
     # Music and Sound Effects
-    pygame.mixer.music.load("sounds/Adrian von Ziegler - Evocation (Chiptune Version).mp3")
+    pygame.mixer.music.load("sounds/Adrian von Ziegler - Evocation (Chiptune).mp3")
     pygame.mixer.music.set_volume(0.5)
     pygame.mixer.music.play(-1)
     # When a laser is shot
@@ -215,26 +215,28 @@ def playGame(mushrooms, leadScore):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 keepGoing = False
-            
-            elif event.type == pygame.KEYDOWN:
-                # Arrow keys move the player
-                if event.key == pygame.K_UP:
-                    player.setDirection((0,1))
-                elif event.key == pygame.K_DOWN:
-                    player.setDirection((0,-1))
-                elif event.key == pygame.K_LEFT:
-                    player.setDirection((-1,0))
-                elif event.key == pygame.K_RIGHT:
-                    player.setDirection((1,0))
-                
-                elif event.key == pygame.K_SPACE:
-                    # Space shoots a laser
-                    if pygame.time.get_ticks() - shootTime >= firingRate:
-                        laser = sprites.Laser(player.rect.centerx, player.rect.top)
-                        lasers.add(laser)
-                        shootTime = pygame.time.get_ticks()
-                        allSprites = pygame.sprite.OrderedUpdates(lasers, player, centipedes, mushrooms, scorpions, spiders, fleas, scoreKeeper, lifeKeeper, leadingScore)
-                        shoot.play()
+        
+        # WASD and arrow keys move the player
+        if pygame.key.get_pressed()[pygame.K_w] or pygame.key.get_pressed()[pygame.K_UP]:
+            player.setDirection((0,1))
+        elif pygame.key.get_pressed()[pygame.K_s] or pygame.key.get_pressed()[pygame.K_DOWN]:
+            player.setDirection((0,-1))
+        elif pygame.key.get_pressed()[pygame.K_a] or pygame.key.get_pressed()[pygame.K_LEFT]:
+            player.setDirection((-1,0))
+        elif pygame.key.get_pressed()[pygame.K_d] or pygame.key.get_pressed()[pygame.K_RIGHT]:
+            player.setDirection((1,0))
+        else:
+            player.setDirection((0,0))
+
+        # Space shoots lasers
+        if pygame.key.get_pressed()[pygame.K_SPACE]:
+            if pygame.time.get_ticks() - shootTime >= firingRate:
+                laser = sprites.Laser(player.rect.centerx, player.rect.top)
+                lasers.add(laser)
+                shootTime = pygame.time.get_ticks()
+                allSprites = pygame.sprite.OrderedUpdates(lasers, player, centipedes, mushrooms, scorpions, spiders, fleas, scoreKeeper, lifeKeeper, leadingScore)
+                shoot.play()
+
         
         # Update enemy sprites (kill or instantiate centipedes, spiders, fleas and scorpions)
         if not centipedes and (pygame.time.get_ticks() - centipedeDeathTime >= 1500):
